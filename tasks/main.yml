@@ -157,6 +157,7 @@
     url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     dest: /tmp/
   run_once: true
+  when: ansible_os_family == "RedHat"
 
 - name: Copy installer (rpm)
   copy:
@@ -165,7 +166,7 @@
     dest: "/tmp/{{ checkmk_agent_rpm }}"
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     mode: preserve
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+  when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
 
 - name: Copy installer (deb)
   copy:
@@ -174,7 +175,7 @@
     dest: "/tmp/{{ checkmk_agent_deb }}"
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
     mode: preserve
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
   changed_when: false
   failed_when: false
 
@@ -185,7 +186,7 @@
     state: present
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
   changed_when: false
   failed_when: false
 
@@ -197,7 +198,7 @@
     state: present
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+  when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
 
 # Block end - system packages | check-mk agent
 # Block end
