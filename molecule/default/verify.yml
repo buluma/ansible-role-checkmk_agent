@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  become: no
+  gather_facts: no
+
+  tasks:
+    - name: run checkmk
+      ansible.builtin.shell:
+        cmd: omd version > omd.version
+      args:
+        creates: omd.version
