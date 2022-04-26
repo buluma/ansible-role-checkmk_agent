@@ -25,13 +25,6 @@
   changed_when: false
   failed_when: false
 
-- name: systemctl stop ufw.service
-  ansible.builtin.raw: |
-    set -eu
-    systemctl stop ufw.service
-    systemctl disable ufw.service
-  changed_when: false
-
 - name: debian | apt-get install *.deb
   ansible.builtin.raw: |
     set -eu
@@ -116,6 +109,18 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   when: ansible_distribution == 'CentOS'
 
+# Block end
+- name: system packages | check-mk agent
+  become: yes
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: present
+    use_backend: yum
+  with_items:
+    - check-mk-enterprise-2.0.0p15-el8-38
+    - xinetd
+    - python3-setuptools
+# Block end
 
 # URL based
 # https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm
