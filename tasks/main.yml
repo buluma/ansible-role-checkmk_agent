@@ -129,20 +129,6 @@
     state: present
   when: ansible_distribution == 'CentOS'
 
-- name: Remove xinetd (apt)
-  become: true
-  apt:
-    name: ['xinetd']
-    state: absent
-  when: checkmk_purge_xinetd and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-
-- name: Remove xinetd (yum)
-  become: true
-  yum:
-    name: 'xinetd'
-    state: absent
-  when: checkmk_purge_xinetd and ansible_distribution == 'CentOS'
-
 # main tasks
 - name: Download check_mk_agent installer (deb)
   delegate_to: localhost
@@ -172,9 +158,9 @@
 - name: Copy installer (deb)
   copy:
     src: "/tmp/{{ checkmk_agent_deb }}"
-    # src: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    # src: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
     dest: "/tmp/{{ checkmk_agent_deb }}"
-    # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    # dest: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
     mode: preserve
   when: ansible_distribution == 'CentOS'
 
