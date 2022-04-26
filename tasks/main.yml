@@ -111,7 +111,46 @@
   changed_when: false
   failed_when: false
 
+# Prep2
+- name: Install dependencies (apt)
+  become: true
+  apt:
+    name: ['monitoring-plugins', 'python3-pip']
+    state: present
+    update_cache: true
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install dependencies (yum)
+  become: true
+  yum:
+    name: 'nagios-plugins'
+    state: present
+  when: ansible_distribution == 'CentOS'
+
+- name: Remove xinetd (apt)
+  become: true
+  apt:
+    name: ['xinetd']
+    state: absent
+  when: checkmk_purge_xinetd and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+
+- name: Remove xinetd (yum)
+  become: true
+  yum:
+    name: 'xinetd'
+    state: absent
+  when: checkmk_purge_xinetd and ansible_distribution == 'CentOS'
+
 # main tasks
+- name: Download check_mk_agent installer (deb)
+  delegate_to: localhost
+  get_url:
+    # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
+    url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23_0.bullseye_amd64.deb"
+    dest: /tmp/
+  run_once: true
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
@@ -129,6 +168,24 @@
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     mode: preserve
   when: ansible_distribution == 'CentOS'
+
+- name: Copy installer (deb)
+  copy:
+    src: "/tmp/{{ checkmk_agent_deb }}"
+    # src: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    dest: "/tmp/{{ checkmk_agent_deb }}"
+    # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    mode: preserve
+  when: ansible_distribution == 'CentOS'
+
+- name: Install check_mk_agent (deb)
+  become: true
+  apt:
+    deb: "/tmp/{{ checkmk_agent_deb }}"
+    state: present
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install check_mk_agent (rpm)
   become: true
