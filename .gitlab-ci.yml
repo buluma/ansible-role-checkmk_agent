@@ -10,8 +10,6 @@ variables:
 # Generic preflight template
 .preflight: &preflight
   stage: preflight
-  tags:
-    # - ansible
 
 # Generic Ansible template
 .ansible: &ansible
@@ -21,8 +19,6 @@ variables:
   before_script:
     - pip install ansible ansible-lint
     - ansible --version
-  tags:
-    # - ansible
 
 # Preflight jobs
 shellcheck:
