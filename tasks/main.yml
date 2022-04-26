@@ -2,6 +2,37 @@
 # tasks file for checkmk_agent
 
 # Prepare
+- name: Create checkmk group
+  become: true
+  group:
+    name: checkmk
+    state: present
+
+- name: Create checkmk user
+  become: true
+  user:
+    name: checkmk
+    comment: checkmk user
+    group: checkmk
+
+- name: Create .ssh directory
+  become: true
+  file:
+    path: /home/checkmk/.ssh
+    state: directory
+    owner: checkmk
+    group: checkmk
+    mode: 0700
+
+- name: Copy authorised keys
+  become: true
+  template:
+    src: authorized_keys.j2
+    dest: /home/checkmk/.ssh/authorized_keys
+    owner: checkmk
+    group: checkmk
+    mode: 0600
+
 - name: cp -rfT /etc/skel /root
   ansible.builtin.raw: |
     set -eu
@@ -114,3 +145,19 @@
 
 # URL based
 # https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm
+
+- name: Disable systemd socket
+  become: true
+  systemd:
+    name: check_mk.socket
+    state: stopped
+    enabled: false
+  when: ansible_distribution != 'CentOS'
+
+- name: Allow sudo access to agent
+  become: true
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^checkmk'
+    line: 'checkmk ALL=(ALL) NOPASSWD:/usr/bin/check_mk_agent'
