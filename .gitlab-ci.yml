@@ -1,0 +1,75 @@
+---
+stages:
+  - preflight
+  - check
+  - deploy
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+# Generic preflight template
+.preflight: &preflight
+  stage: preflight
+  tags:
+    - ansible
+
+# Generic Ansible template
+.ansible: &ansible
+  image:
+    name: python:3.7
+    entrypoint: [""]
+  before_script:
+    - pip install ansible ansible-lint
+    - ansible --version
+  tags:
+    - ansible
+
+# Preflight jobs
+shellcheck:
+  <<: *preflight
+  image:
+    name: koalaman/shellcheck-alpine:stable
+    entrypoint: [""]
+  before_script:
+    - shellcheck --version
+    - apk --no-cache add grep
+  script:
+    - |
+      for file in $(grep -IRl "#\!\(/usr/bin/env \|/bin/\)" \
+            --exclude-dir ".git" .); do
+        if ! shellcheck -x $file; then
+          export FAILED=1
+        else
+          echo "$file OK"
+        fi
+      done
+      if [ "${FAILED}" = "1" ]; then
+        exit 1
+      fi
+
+yamllint:
+  <<: *preflight
+  image: sdesbure/yamllint
+  before_script:
+    - yamllint --version
+  script:
+    - yamllint .
+
+markdownlint:
+  <<: *preflight
+  image:
+    name: ruby:alpine
+    entrypoint: [""]
+  before_script:
+    - apk --no-cache add git
+    - gem install mdl
+    - mdl --version
+  script:
+    - mdl --style all --warnings --git-recurse .
+
+# Ansible check jobs
+ansible-lint:
+  <<: *ansible
+  stage: check
+  script:
+    - ansible-lint -x 403 .
