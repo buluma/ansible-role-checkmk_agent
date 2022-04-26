@@ -46,6 +46,7 @@ galaxy_info:
       versions:
         - all
 
-  galaxy_tags: []
+  galaxy_tags:
+    - checkmk
 
 dependencies: []
