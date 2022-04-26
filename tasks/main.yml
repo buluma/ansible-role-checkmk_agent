@@ -1,12 +1,5 @@
 ---
 # tasks file for checkmk_agent
-- name: system packages | install epel repo
-  become: yes
-  ansible.builtin.yum:
-    name: epel-release
-    state: present
-    use_backend: yum
-
 - name: system packages | check-mk agent
   become: yes
   ansible.builtin.yum:
