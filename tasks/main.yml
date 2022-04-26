@@ -7,7 +7,7 @@
     state: present
     use_backend: yum
   with_items:
-    - check-mk-agent-1.2.6p16
+    - check-mk-enterprise-2.0.0p15-el8-38
     - xinetd
     - setuptools
 
