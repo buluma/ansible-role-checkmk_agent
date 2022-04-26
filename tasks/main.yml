@@ -63,21 +63,22 @@
     state: absent
   when: checkmk_purge_xinetd and ansible_distribution == 'CentOS'
 
-- name: Download check_mk_agent installer (deb)
-  delegate_to: localhost
-  ansible.builtin.get_url:
-    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
-    dest: /tmp/
-    mode: 0644
-  run_once: true
+# TODO: restore this
+# - name: Download check_mk_agent installer (deb)
+#  delegate_to: localhost
+#  ansible.builtin.get_url:
+#    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
+#    dest: /tmp/
+#    mode: 0644
+#  run_once: true
 
-- name: Download check_mk_agent installer (rpm)
-  delegate_to: localhost
-  ansible.builtin.get_url:
-    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
-    dest: /tmp/
-    mode: 0644
-  run_once: true
+# - name: Download check_mk_agent installer (rpm)
+#  delegate_to: localhost
+#  ansible.builtin.get_url:
+#    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
+#    dest: /tmp/
+#    mode: 0644
+#  run_once: true
 
 - name: Copy installer (deb)
   ansible.builtin.copy:
