@@ -30,7 +30,7 @@ galaxy_info:
   # this branch. If Travis integration is configured, only notifications for this
   # branch will be accepted. Otherwise, in all cases, the repo's default branch
   # (usually master) will be used.
-  #github_branch:
+  # github_branch:
 
   #
   # platforms is a list of platforms, and each platform has a name and a list of versions.
@@ -42,9 +42,9 @@ galaxy_info:
     - name: Debian
       versions:
         - all
-    - name: CentOS
+    - name: EL
       versions:
-        - 6.x
+        - all
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes

@@ -1,2 +1,6 @@
+.molecule
+*.log
 *.swp
-*.swo
+.tox
+.cache
+.DS_Store
