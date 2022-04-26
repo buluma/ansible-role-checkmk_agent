@@ -1,203 +1,23 @@
 ---
 # tasks file for checkmk_agent
-- name: Create checkmk group
-  become: true
-  ansible.builtin.group:
-    name: checkmk
+- name: system packages | install epel repo
+  become: yes
+  yum:
+    name: epel-release
     state: present
 
-- name: Create checkmk user
-  become: true
-  ansible.builtin.user:
-    name: checkmk
-    comment: checkmk user
-    group: checkmk
-
-- name: Create .ssh directory
-  become: true
-  ansible.builtin.file:
-    path: /home/checkmk/.ssh
-    state: directory
-    owner: checkmk
-    group: checkmk
-    mode: 0700
-
-- name: Copy authorised keys
-  become: true
-  ansible.builtin.template:
-    src: authorized_keys.j2
-    dest: /home/checkmk/.ssh/authorized_keys
-    owner: checkmk
-    group: checkmk
-    mode: 0600
-
-- name: Install dependencies (apt)
-  become: true
-  ansible.builtin.apt:
-    # name: ['monitoring-plugins', 'python-pip3']
-    name: ['monitoring-plugins']
+- name: system packages | check-mk agent
+  become: yes
+  yum:
+    name: "{{ item }}"
     state: present
-    update_cache: true
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+    - check-mk-agent-1.2.6p16
+    - xinetd
 
-- name: Install dependencies (yum)
-  become: true
-  ansible.builtin.yum:
-    name: 'nagios-plugins'
-    state: present
-  when: ansible_distribution == 'CentOS'
-
-- name: Remove xinetd (apt)
-  become: true
-  ansible.builtin.apt:
-    name: ['xinetd']
-    state: absent
-  when: checkmk_purge_xinetd and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-
-- name: Remove xinetd (yum)
-  become: true
-  ansible.builtin.yum:
-    name: 'xinetd'
-    state: absent
-  when: checkmk_purge_xinetd and ansible_distribution == 'CentOS'
-
-# TODO: restore this
-# - name: Download check_mk_agent installer (deb)
-#  delegate_to: localhost
-#  ansible.builtin.get_url:
-#    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
-#    dest: /tmp/
-#    mode: 0644
-#  run_once: true
-
-# - name: Download check_mk_agent installer (rpm)
-#  delegate_to: localhost
-#  ansible.builtin.get_url:
-#    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
-#    dest: /tmp/
-#    mode: 0644
-#  run_once: true
-
-- name: Copy installer (deb)
-  ansible.builtin.copy:
-    src: "/tmp/{{ checkmk_agent_deb }}"
-    dest: "/tmp/{{ checkmk_agent_deb }}"
-    mode: preserve
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
-- name: Copy installer (rpm)
-  ansible.builtin.copy:
-    src: "/tmp/{{ checkmk_agent_rpm }}"
-    dest: "/tmp/{{ checkmk_agent_rpm }}"
-    mode: preserve
-  when: ansible_distribution == 'CentOS'
-
-- name: Install check_mk_agent (deb)
-  become: true
-  ansible.builtin.apt:
-    deb: "/tmp/{{ checkmk_agent_deb }}"
-    state: present
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
-- name: Install check_mk_agent (rpm)
-  become: true
-  ansible.builtin.yum:
-    name: "/tmp/{{ checkmk_agent_rpm }}"
-    state: present
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'CentOS'
-
-- name: Disable systemd socket
-  become: true
-  ansible.builtin.systemd:
-    name: check_mk.socket
-    state: stopped
-    enabled: false
-  when: ansible_distribution != 'CentOS'
-
-- name: Allow sudo access to agent
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    state: present
-    regexp: '^checkmk'
-    line: 'checkmk ALL=(ALL) NOPASSWD:/usr/bin/check_mk_agent'
-
-- name: Download apt plugin
-  delegate_to: localhost
-  ansible.builtin.get_url:
-    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/plugins/mk_apt"
-    dest: /tmp/
-    mode: 0644
-  run_once: true
-
-- name: Install apt plugin
-  become: true
-  ansible.builtin.copy:
-    src: "/tmp/mk_apt"
-    dest: "/usr/lib/check_mk_agent/plugins/mk_apt"
-    mode: 0755
-    owner: root
-    group: root
-  when: "(ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and 'rpis' not in group_names"
-
-- name: Download docker plugin
-  delegate_to: localhost
-  ansible.builtin.get_url:
-    url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/plugins/mk_docker.py"
-    dest: /tmp/
-    mode: 0644
-  run_once: true
-
-- name: Install docker python module
-  become: true
-  ansible.builtin.pip:
-    name: docker
-    state: latest
-    executable: /usr/bin/pip
-  when: "'docker_hosts' in group_names"
-
-- name: Install docker plugin
-  become: true
-  ansible.builtin.copy:
-    src: "/tmp/mk_docker.py"
-    dest: "/usr/lib/check_mk_agent/plugins/mk_docker.py"
-    mode: 0755
-    owner: root
-    group: root
-  when: "'docker_hosts' in group_names"
-
-- name: Install docker plugin config
-  become: true
-  ansible.builtin.copy:
-    src: "docker.cfg"
-    dest: "/etc/check_mk/docker.cfg"
-    owner: root
-    group: root
-    mode: 0644
-  when: "'docker_hosts' in group_names"
-
-- name: Install python-backports.ssl-match-hostname from apt
-  become: true
-  ansible.builtin.apt:
-    name: python-backports.ssl-match-hostname
-    state: present
-    update_cache: true
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and 'docker_hosts' in group_names
-
-- name: Remove unneeded apt packages
-  become: true
-  ansible.builtin.apt:
-    name: python-backports.ssl-match-hostname
-    state: absent
-    update_cache: true
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and 'docker_hosts' not in group_names
+- name: xinetd | start and enable
+  become: yes
+  service:
+    enabled: yes
+    name: xinetd.service
+    state: started
