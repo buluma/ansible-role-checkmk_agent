@@ -12,3 +12,5 @@
 
   roles:
     - role: ansible-role-checkmk_agent
+      checkmk_server: 127.0.0.1
+      checkmk_site_name: mysite
