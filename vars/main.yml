@@ -1,4 +1,4 @@
 ---
 # vars file for checkmk_agent
-checkmk_agent_deb: check-mk-agent_1.6.0p17-1_all.deb
-checkmk_agent_rpm: check-mk-agent-1.6.0p17-1.noarch.rpm
+checkmk_agent_deb: check-mk-agent_2.0.0p12-31293648899edb8d_all.deb
+checkmk_agent_rpm: check-mk-agent-2.0.0p12-31293648899edb8d.noarch.rpm
