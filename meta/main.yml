@@ -36,13 +36,25 @@ galaxy_info:
   # platforms is a list of platforms, and each platform has a name and a list of versions.
   #
   platforms:
-    - name: Ubuntu
+    - name: Alpine
       versions:
         - all
+    - name: Amazon
+      versions:
+        - Candidate
+    - name: EL
+      versions:
+        - 8
     - name: Debian
       versions:
         - all
-    - name: EL
+    - name: Fedora
+      versions:
+        - all
+    - name: OpenSUSE
+      versions:
+        - all
+    - name: Ubuntu
       versions:
         - all
 
