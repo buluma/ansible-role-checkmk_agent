@@ -33,8 +33,6 @@ molecule:
         tag: "bookworm"
       - image: "enterpriselinux"
         tag: "7"
-      - image: "enterpriselinux"
-        tag: "latest"
 
 testing:
   stage: test
