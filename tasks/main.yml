@@ -5,12 +5,14 @@
   ansible.builtin.yum:
     name: epel-release
     state: present
+    use_backend: yum
 
 - name: system packages | check-mk agent
   become: yes
   ansible.builtin.yum:
     name: "{{ item }}"
     state: present
+    use_backend: yum
   with_items:
     - check-mk-agent-1.2.6p16
     - xinetd
