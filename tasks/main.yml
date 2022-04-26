@@ -1,6 +1,9 @@
 ---
 # tasks file for checkmk_agent
 
+- shell: echo "only on Red Hat 6, derivatives, and later"
+  when: ansible_os_family == "RedHat" and ansible_lsb.major_release|int >= 6
+
 # Prepare
 - name: Create checkmk group
   become: true
