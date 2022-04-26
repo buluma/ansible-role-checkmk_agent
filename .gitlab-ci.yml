@@ -1,104 +1,70 @@
 ---
-image: "buluma/github-action-molecule:4.0.6"
-
-services:
-  - docker:dind
+stages:
+  - preflight
+  - check
+  - deploy
 
 variables:
-  DOCKER_HOST: "tcp://docker:2375"
-  PY_COLORS: 1
+  GIT_SUBMODULE_STRATEGY: recursive
 
-molecule:
-  stage: build
-  allow_failure: true
-  script:
-    - image=${image} tag=${tag} molecule test
-  artifacts:
-    name: "$CI_JOB_STAGE-$CI_COMMIT_REF_NAME"
-    paths:
-      - /
-    expire_in: 1 day
-  retry: 1
-  parallel:
-    matrix:
-      - image: "docker-ubuntu-systemd"
-        tag: "latest"
-      - image: "docker-ubuntu-systemd"
-        tag: "bionic"
-      - image: "docker-ubuntu-systemd"
-        tag: "focal"
-      - image: "debian-systemd"
-        tag: "latest"
-      - image: "debian-systemd"
-        tag: "bookworm"
-      - image: "enterpriselinux"
-        tag: "7"
-      - image: "enterpriselinux"
-        tag: "latest"
+# Generic preflight template
+.preflight: &preflight
+  stage: preflight
 
-testing:
-  stage: test
-  needs: []
-  script:
-    - image=${image} tag=${tag} molecule test
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "testing"
-  retry: 1
-  parallel:
-    matrix:
-      - image: "docker-ubuntu-systemd"
-        tag: "latest"
-      - image: "docker-ubuntu-systemd"
-        tag: "bionic"
-      - image: "docker-ubuntu-systemd"
-        tag: "focal"
-      - image: "debian-systemd"
-        tag: "latest"
-      - image: "debian-systemd"
-        tag: "bookworm"
-      - image: "enterpriselinux"
-        tag: "7"
-      - image: "enterpriselinux"
-        tag: "latest"
+# Generic Ansible template
+.ansible: &ansible
+  image:
+    name: python:3.7
+    entrypoint: [""]
+  before_script:
+    - pip install ansible ansible-lint
+    - ansible --version
 
-galaxy:
-  stage: deploy
-  needs: []
+# Preflight jobs
+shellcheck:
+  <<: *preflight
+  image:
+    name: koalaman/shellcheck-alpine:stable
+    entrypoint: [""]
+  before_script:
+    - shellcheck --version
+    - apk --no-cache add grep
   script:
-    - ansible-galaxy role info buluma.checkmk_agent
+    - |
+      for file in $(grep -IRl "#\!\(/usr/bin/env \|/bin/\)" \
+            --exclude-dir ".git" .); do
+        if ! shellcheck -x $file; then
+          export FAILED=1
+        else
+          echo "$file OK"
+        fi
+      done
+      if [ "${FAILED}" = "1" ]; then
+        exit 1
+      fi
+yamllint:
+  <<: *preflight
+  image: sdesbure/yamllint
+  before_script:
+    - yamllint --version
+  script:
+    - yamllint .
 
-role_testing:
-  stage: test
-  needs: []
+markdownlint:
+  <<: *preflight
+  image:
+    name: ruby:alpine
+    entrypoint: [""]
+  before_script:
+    - apk --no-cache add git
+    - gem install mdl
+    - mdl --version
   script:
-    - image=${image} tag=${tag} ansible-galaxy install buluma.checkmk_agent
-  retry: 1
-  parallel:
-    matrix:
-      - image: "docker-ubuntu-systemd"
-        tag: "latest"
-      - image: "docker-ubuntu-systemd"
-        tag: "bionic"
-      - image: "docker-ubuntu-systemd"
-        tag: "focal"
-      - image: "debian-systemd"
-        tag: "latest"
-      - image: "debian-systemd"
-        tag: "bookworm"
-      - image: "enterpriselinux"
-        tag: "7"
-      - image: "enterpriselinux"
-        tag: "latest"
+    - mdl --style all --warnings --git-recurse .
 
-release_job:
-  stage: .post
-  needs: [molecule]
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  rules:
-    - if: $CI_COMMIT_TAG
+# Ansible check jobs
+ansible-lint:
+  <<: *ansible
+  stage: check
   script:
-    - echo "Running the release job."
-  release:
-    tag_name: $CI_COMMIT_TAG
-    name: 'Release $CI_COMMIT_TAG'
-    description: 'Release created using the release-cli.'
+    - ansible-lint -x 403 .
