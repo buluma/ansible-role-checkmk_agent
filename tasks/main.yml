@@ -127,7 +127,7 @@
   yum:
     name: 'nagios-plugins'
     state: present
-  when: ansible_distribution == 'CentOS'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 # main tasks
 - name: Download check_mk_agent installer (deb)
@@ -139,6 +139,7 @@
   run_once: true
   changed_when: false
   failed_when: false
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
@@ -155,7 +156,7 @@
     dest: "/tmp/{{ checkmk_agent_rpm }}"
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     mode: preserve
-  when: ansible_distribution == 'CentOS'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Copy installer (deb)
   copy:
@@ -164,7 +165,7 @@
     dest: "/tmp/{{ checkmk_agent_deb }}"
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
     mode: preserve
-  when: ansible_distribution == 'CentOS'
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   changed_when: false
   failed_when: false
 
@@ -187,7 +188,7 @@
     state: present
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  when: ansible_distribution == 'CentOS'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 # Block end - system packages | check-mk agent
 # Block end
