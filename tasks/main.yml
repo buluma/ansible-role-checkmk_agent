@@ -88,17 +88,37 @@
   failed_when: false
 
 # main tasks
-- name: system packages | check-mk agent
-  become: yes
-  ansible.builtin.yum:
-    name: "{{ item }}"
-    state: present
-    use_backend: yum
-  with_items:
-    - check-mk-enterprise-2.0.0p15-el8-38
-    - xinetd
-    - python3-setuptools
 
+- name: Download check_mk_agent installer (rpm)
+  delegate_to: localhost
+  get_url:
+    # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
+    url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    dest: /tmp/
+  run_once: true
+
+- name: Copy installer (rpm)
+  copy:
+    # src: "/tmp/{{ checkmk_agent_rpm }}"
+    src: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    # dest: "/tmp/{{ checkmk_agent_rpm }}"
+    dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    mode: preserve
+  when: ansible_distribution == 'CentOS'
+
+- name: Install check_mk_agent (rpm)
+  become: true
+  yum:
+    # name: "/tmp/{{ checkmk_agent_rpm }}"
+    name: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    state: present
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_distribution == 'CentOS'
+
+
+# URL based
+# https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm
 - name: xinetd | start and enable
   become: yes
   service:
