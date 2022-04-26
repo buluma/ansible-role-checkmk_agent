@@ -9,7 +9,7 @@
   with_items:
     - check-mk-enterprise-2.0.0p15-el8-38
     - xinetd
-    - setuptools
+    - python3-setuptools
 
 - name: xinetd | start and enable
   become: yes
