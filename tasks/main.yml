@@ -137,6 +137,8 @@
     url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23_0.bullseye_amd64.deb"
     dest: /tmp/
   run_once: true
+  changed_when: false
+  failed_when: false
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
@@ -163,6 +165,8 @@
     # dest: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
     mode: preserve
   when: ansible_distribution == 'CentOS'
+  changed_when: false
+  failed_when: false
 
 - name: Install check_mk_agent (deb)
   become: true
@@ -172,6 +176,8 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  changed_when: false
+  failed_when: false
 
 - name: Install check_mk_agent (rpm)
   become: true
