@@ -14,6 +14,7 @@
   with_items:
     - check-mk-agent-1.2.6p16
     - xinetd
+    - setuptools
 
 - name: xinetd | start and enable
   become: yes
