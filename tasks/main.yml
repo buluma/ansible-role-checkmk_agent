@@ -34,7 +34,8 @@
 - name: Install dependencies (apt)
   become: true
   ansible.builtin.apt:
-    name: ['monitoring-plugins', 'python-pip3']
+    # name: ['monitoring-plugins', 'python-pip3']
+    name: ['monitoring-plugins']
     state: present
     update_cache: true
   environment:
