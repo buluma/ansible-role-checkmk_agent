@@ -203,14 +203,6 @@
 # URL based
 # https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm
 
-- name: Disable systemd socket
-  become: true
-  systemd:
-    name: check_mk.socket
-    state: stopped
-    enabled: false
-  when: ansible_distribution != 'CentOS'
-
 - name: Allow sudo access to agent
   become: true
   lineinfile:
