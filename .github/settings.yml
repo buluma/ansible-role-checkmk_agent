@@ -5,4 +5,4 @@
 repository:
   description: Install the checkmk agent and a selection of plugins
   homepage: https://buluma.github.io/
-  topics: , ansible, molecule, tox, playbook, hacktoberfest
+  topics: checkmk, ansible, molecule, tox, playbook, hacktoberfest
