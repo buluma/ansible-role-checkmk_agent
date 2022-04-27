@@ -26,6 +26,7 @@
 - name: redhat-8 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
+    subscription-manager repos --enable "codeready-builder-for-rhel-8-x86_64-rpms"
     yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
   when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "8"
@@ -35,6 +36,8 @@
 - name: redhat-7 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
+    yum-config-manager --enable rhel-7-server-optional-rpms
+    yum-config-manager --enable rhel-7-server-extras-rpms
     subscription-manager repos --enable=rhel-7-server-optional-rpms || echo $?
     subscription-manager repos --enable=rhel-7-server-extras-rpms || echo $?
     yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
