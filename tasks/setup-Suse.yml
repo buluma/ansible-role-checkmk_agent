@@ -14,7 +14,7 @@
 
 # https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-sles15sp3-38.x86_64.rpm
 
-- name: Download check_mk_agent installer (rpm)
+- name: "Download check_mk_agent installer (rpm) - {{ ansible_os_family }}"
   delegate_to: localhost
   ansible.builtin.get_url:
     # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
@@ -22,13 +22,18 @@
     dest: /tmp/
   run_once: true
 
-- name: Copy installer (rpm)
+- name: "Copy installer (rpm) - {{ ansible_os_family }}"
   ansible.builtin.copy:
     src: "/tmp/{{ checkmk_agent_suse }}"
     dest: "/tmp/{{ checkmk_agent_suse }}"
     mode: preserve
 
-- name: Install check_mk_agent (rpm)
+- name: Import Check_MK-pubkey
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://download.checkmk.com/checkmk/Check_MK-pubkey.gpg
+
+- name: "Install check_mk_agent (rpm) - {{ ansible_os_family }}"
   become: true
   ansible.builtin.yum:
     name: "/tmp/{{ checkmk_agent_suse }}"
