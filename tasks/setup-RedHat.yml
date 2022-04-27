@@ -43,23 +43,14 @@
   changed_when: false
   failed_when: false
 
-- name: Install dependencies (yum)
-  become: true
-  yum:
-    name: 'nagios-plugins'
-    state: present
-
-- name: Install dependencies (yum)
-  become: true
-  yum:
-    name: 'nagios-plugins'
-    state: present
-
-- name: Install xinetd (yum)
-  become: true
+- name: Install a list of packages dependencies (yum)
   ansible.builtin.yum:
-    name: 'xinetd'
-    state: present
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - nagios-plugins
+    - xinetd
+    - graphviz-gd
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
