@@ -50,7 +50,6 @@
     packages:
       - nagios-plugins
       - xinetd
-      - graphviz-gd
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
