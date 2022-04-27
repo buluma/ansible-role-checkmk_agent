@@ -49,6 +49,18 @@
     name: 'nagios-plugins'
     state: present
 
+- name: Install dependencies (yum)
+  become: true
+  yum:
+    name: 'nagios-plugins'
+    state: present
+
+- name: Install xinetd (yum)
+  become: true
+  ansible.builtin.yum:
+    name: 'xinetd'
+    state: present
+
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
   get_url:
