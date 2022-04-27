@@ -51,7 +51,7 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - nagios-plugins
+      # - nagios-plugins
       - xinetd
 
 - name: Download check_mk_agent installer (rpm)
