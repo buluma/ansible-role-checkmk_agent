@@ -23,7 +23,6 @@
     update_cache: true
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Download check_mk_agent installer (deb)
   delegate_to: localhost

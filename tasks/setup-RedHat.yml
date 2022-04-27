@@ -48,7 +48,6 @@
   yum:
     name: 'nagios-plugins'
     state: present
-  # when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Download check_mk_agent installer (rpm)
   delegate_to: localhost
@@ -57,14 +56,12 @@
     url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     dest: /tmp/
   run_once: true
-  # when: ansible_os_family == "RedHat"
 
 - name: Copy installer (rpm)
   copy:
     src: "/tmp/{{ checkmk_agent_rpm }}"
     dest: "/tmp/{{ checkmk_agent_rpm }}"
     mode: preserve
-  # when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
 
 - name: Install check_mk_agent (rpm)
   become: true
@@ -73,4 +70,3 @@
     state: present
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  # when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
