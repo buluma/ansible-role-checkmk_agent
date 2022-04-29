@@ -66,11 +66,9 @@ testing:
       - image: "docker-opensuse-systemd"
         tag: "latest"
       - image: "ubuntu"
-        tag: "21.04"
-      - image: "docker-ubuntu2104-ansible"
-        tag: "focal"
-      - image: "docker-ubuntu2104-ansible"
-        tag: "latest"
+        tag: "21.04"  # hirsute
+      - image: "ubuntu"
+        tag: "21.10"  # impish
 
 galaxy:
   stage: deploy
