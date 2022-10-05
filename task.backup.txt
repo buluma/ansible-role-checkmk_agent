@@ -1,0 +1,219 @@
+---
+# tasks file for checkmk_agent
+
+# Setup/install.
+- name: Setup.
+  include_tasks: "setup-{{ ansible_os_family }}.yml"
+
+- shell: echo "only on Red Hat and derivatives"
+  when: ansible_os_family == "RedHat"
+
+- shell: echo "only on Debian and derivatives"
+  when: ansible_os_family == "Debian"
+
+- shell: echo "only on Ubuntu and derivatives"
+  when: ansible_os_family == "Ubuntu"
+
+# Prepare
+- name: Create checkmk group
+  become: true
+  group:
+    name: checkmk
+    state: present
+
+- name: Create checkmk user
+  become: true
+  user:
+    name: checkmk
+    comment: checkmk user
+    group: checkmk
+
+- name: Create .ssh directory
+  become: true
+  file:
+    path: /home/checkmk/.ssh
+    state: directory
+    owner: checkmk
+    group: checkmk
+    mode: 0700
+
+- name: Copy authorised keys
+  become: true
+  template:
+    src: authorized_keys.j2
+    dest: /home/checkmk/.ssh/authorized_keys
+    owner: checkmk
+    group: checkmk
+    mode: 0600
+
+- name: cp -rfT /etc/skel /root
+  ansible.builtin.raw: |
+    set -eu
+    cp -rfT /etc/skel /root
+  changed_when: false
+  failed_when: false
+
+- name: setenforce 0
+  ansible.builtin.raw: |
+    set -eu
+    setenforce 0
+    sed -i 's/^SELINUX=.*$/SELINUX=permissive/g' /etc/selinux/config
+  changed_when: false
+  failed_when: false
+
+- name: systemctl stop firewalld.service
+  ansible.builtin.raw: |
+    set -eu
+    systemctl stop firewalld.service
+    systemctl disable firewalld.service
+  changed_when: false
+  failed_when: false
+
+- name: debian | apt-get install *.deb
+  ansible.builtin.raw: |
+    set -eu
+    DEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3 python3-apt python3-jmespath python3-lxml python3-pip python3-setuptools python3-venv python3-virtualenv python3-wheel rsync sudo tar unzip util-linux xz-utils zip
+  when: ansible_os_family | lower == "debian"
+  changed_when: false
+  failed_when: false
+
+- name: fedora | yum install *.rpm
+  ansible.builtin.raw: |
+    set -eu
+    yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
+  when: ansible_distribution | lower == "fedora"
+  changed_when: false
+  failed_when: false
+
+- name: redhat-9 | yum install *.rpm
+  ansible.builtin.raw: |
+    set -eu
+    yum-config-manager --enable crb || echo $?
+    yum-config-manager --enable codeready-builder-beta-for-rhel-9-x86_64-rpms || echo $?
+    yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "9"
+  changed_when: false
+  failed_when: false
+
+- name: redhat-8 | yum install *.rpm
+  ansible.builtin.raw: |
+    set -eu
+    yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "8"
+  changed_when: false
+  failed_when: false
+
+- name: redhat-7 | yum install *.rpm
+  ansible.builtin.raw: |
+    set -eu
+    subscription-manager repos --enable=rhel-7-server-optional-rpms || echo $?
+    subscription-manager repos --enable=rhel-7-server-extras-rpms || echo $?
+    yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-plugin-versionlock yum-utils zip
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "7"
+  changed_when: false
+  failed_when: false
+
+- name: suse | zypper -n install *.rpm
+  ansible.builtin.raw: |
+    set -eu
+    zypper -n install -y bzip2 ca-certificates curl gcc gpg2 gzip hostname iproute2 procps python3 python3-jmespath python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow sudo tar unzip util-linux xz zip
+  when: ansible_os_family | lower == "suse"
+  changed_when: false
+  failed_when: false
+
+# Prep2
+- name: Install dependencies (apt)
+  become: true
+  apt:
+    name: ['monitoring-plugins', 'python3-pip']
+    state: present
+    update_cache: true
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install dependencies (yum)
+  become: true
+  yum:
+    name: 'nagios-plugins'
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+# main tasks
+- name: Download check_mk_agent installer (deb)
+  delegate_to: localhost
+  get_url:
+    # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
+    url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23_0.bullseye_amd64.deb"
+    dest: /tmp/
+  run_once: true
+  changed_when: false
+  failed_when: false
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Download check_mk_agent installer (rpm)
+  delegate_to: localhost
+  get_url:
+    # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
+    url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    dest: /tmp/
+  run_once: true
+  when: ansible_os_family == "RedHat"
+
+- name: Copy installer (rpm)
+  copy:
+    src: "/tmp/{{ checkmk_agent_rpm }}"
+    # src: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    dest: "/tmp/{{ checkmk_agent_rpm }}"
+    # dest: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    mode: preserve
+  when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
+
+- name: Copy installer (deb)
+  copy:
+    src: "/tmp/{{ checkmk_agent_deb }}"
+    # src: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
+    dest: "/tmp/{{ checkmk_agent_deb }}"
+    # dest: "/tmp/check-mk-free-2.0.0p23-el7-38_all.deb"
+    mode: preserve
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
+  changed_when: false
+  failed_when: false
+
+- name: Install check_mk_agent (deb)
+  become: true
+  apt:
+    deb: "/tmp/{{ checkmk_agent_deb }}"
+    state: present
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
+  changed_when: false
+  failed_when: false
+
+- name: Install check_mk_agent (rpm)
+  become: true
+  yum:
+    name: "/tmp/{{ checkmk_agent_rpm }}"
+    # name: "/tmp/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
+    state: present
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  when: ansible_os_family == 'CentOS' or ansible_os_family == 'RedHat'
+
+# Block end - system packages | check-mk agent
+# Block end
+
+# URL based
+# https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm
+
+- name: Allow sudo access to agent
+  become: true
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^checkmk'
+    line: 'checkmk ALL=(ALL) NOPASSWD:/usr/bin/check_mk_agent'

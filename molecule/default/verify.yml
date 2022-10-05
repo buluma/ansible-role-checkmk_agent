@@ -5,7 +5,7 @@
   gather_facts: no
 
   tasks:
-    - name: run checkmk
+    - name: Run checkmk
       ansible.builtin.shell:
         cmd: omd version > omd.version
       args:

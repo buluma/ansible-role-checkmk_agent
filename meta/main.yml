@@ -56,7 +56,8 @@ galaxy_info:
         - all
     - name: Ubuntu
       versions:
-        - all
+        - hirsute
+        - impish
 
   galaxy_tags:
     - checkmk
