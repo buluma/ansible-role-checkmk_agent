@@ -1,10 +1,10 @@
 ---
-- name: setup-Redhat | Print the gateway for each debian host when defined
+- name: setup-Redhat |  Print the gateway for each debian host when defined
   ansible.builtin.debug:
     msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
   when: ansible_default_ipv4.gateway is defined
 
-- name: setup-Redhat | Yum install *.rpm
+- name: setup-Redhat |  fedora | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
@@ -12,7 +12,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-Redhat | Yum install *.rpm
+- name: setup-Redhat |  redhat-9 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum-config-manager --enable crb || echo $?
@@ -23,7 +23,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-Redhat | Yum install *.rpm
+- name: setup-Redhat |  redhat-8 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     subscription-manager repos --enable "codeready-builder-for-rhel-8-x86_64-rpms"
@@ -33,7 +33,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-Redhat | Yum install *.rpm
+- name: setup-Redhat |  redhat-7 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum-config-manager --enable rhel-7-server-optional-rpms
@@ -46,7 +46,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-Redhat | Install a list of packages dependencies (yum)
+- name: setup-Redhat |  Install a list of packages dependencies (yum)
   ansible.builtin.yum:
     name: "{{ packages }}"
   vars:
@@ -54,7 +54,7 @@
       # - nagios-plugins
       - xinetd
 
-- name: setup-Redhat | Download check_mk_agent installer (rpm)
+- name: setup-Redhat |  Download check_mk_agent installer (rpm)
   delegate_to: localhost
   ansible.builtin.get_url:
     # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
@@ -62,13 +62,13 @@
     dest: /tmp/
   run_once: true
 
-- name: setup-Redhat | Copy installer (rpm)
+- name: setup-Redhat |  Copy installer (rpm)
   ansible.builtin.copy:
     src: "/tmp/{{ checkmk_agent_rpm }}"
     dest: "/tmp/{{ checkmk_agent_rpm }}"
     mode: preserve
 
-- name: setup-Redhat | Install check_mk_agent (rpm)
+- name: setup-Redhat |  Install check_mk_agent (rpm)
   become: true
   ansible.builtin.yum:
     name: "/tmp/{{ checkmk_agent_rpm }}"
