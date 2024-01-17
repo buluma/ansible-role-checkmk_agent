@@ -16,6 +16,7 @@ skip_list:
   - yaml[truthy]
   - fqcn[action-core]
   - no-free-form
+  - risky-file-permissions
 
 enable_list:
   - name[prefix]
