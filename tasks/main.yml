@@ -33,14 +33,14 @@
     group: checkmk
     mode: 0600
 
-- name: cp -rfT /etc/skel /root
+- name: Cp -rfT /etc/skel /root
   ansible.builtin.raw: |
     set -eu
     cp -rfT /etc/skel /root
   changed_when: false
   failed_when: false
 
-- name: setenforce 0
+- name: Setenforce 0
   ansible.builtin.raw: |
     set -eu
     setenforce 0
@@ -48,7 +48,7 @@
   changed_when: false
   failed_when: false
 
-- name: systemctl stop firewalld.service
+- name: Systemctl stop firewalld.service
   ansible.builtin.raw: |
     set -eu
     systemctl stop firewalld.service
