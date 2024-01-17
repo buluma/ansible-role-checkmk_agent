@@ -4,7 +4,7 @@
     msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
   when: ansible_default_ipv4.gateway is defined
 
-- name: setup-RedHat | fedora | yum install *.rpm
+- name: setup-RedHat | Fedora | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum install -y bzip2 ca-certificates curl gcc gnupg2 gzip hostname iproute procps-ng python3 python3-dnf-plugin-versionlock python3-jmespath python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip
@@ -12,7 +12,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-RedHat | redhat-9 | yum install *.rpm
+- name: setup-RedHat | Redhat-9 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum-config-manager --enable crb || echo $?
@@ -23,7 +23,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-RedHat | redhat-8 | yum install *.rpm
+- name: setup-RedHat | Redhat-8 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     subscription-manager repos --enable "codeready-builder-for-rhel-8-x86_64-rpms"
@@ -33,7 +33,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-RedHat | redhat-7 | yum install *.rpm
+- name: setup-RedHat | Redhat-7 | yum install *.rpm
   ansible.builtin.raw: |
     set -eu
     yum-config-manager --enable rhel-7-server-optional-rpms
