@@ -1,21 +1,29 @@
 ---
-- name: setup-Debian |  Update apt cache.
+- name: setup-Debian | Update apt cache.
   apt: update_cache=yes cache_valid_time=3600
 
-- name: setup-Debian |  Print the gateway for each debian host when defined
+- name: setup-Debian | Print the gateway for each debian host when defined
   ansible.builtin.debug:
     msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
   when: ansible_default_ipv4.gateway is defined
 
-- name: setup-Debian |  debian | apt-get install *.deb
+- name: setup-Debian | Apt-get install *.deb
   ansible.builtin.raw: |
     set -eu
-    DEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3 python3-apt python3-jmespath python3-lxml python3-pip python3-setuptools python3-venv python3-virtualenv python3-wheel rsync sudo tar unzip util-linux xz-utils zip libperl5.32 libevent-2.1-7
+    DEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3 python3-apt python3-jmespath python3-lxml python3-pip python3-setuptools python3-venv python3-virtualenv python3-wheel rsync sudo tar unzip util-linux zip libperl5.32 libevent-2.1-7
   # when: ansible_os_family | lower == "debian"
   changed_when: false
   failed_when: false
 
-- name: setup-Debian |  Install dependencies (apt)
+# TODO: Pinning due to CVE-2024-3094
+- name: setup-Debian | Try to install xz-utils packages
+  ansible.builtin.pip:
+    name: xz-utils==5.4.6
+    state: present
+  changed_when: false
+  failed_when: false
+
+- name: setup-Debian | Install dependencies (apt)
   become: true
   ansible.builtin.apt:
     name: ['monitoring-plugins', 'python3-pip', 'xinetd']
@@ -24,7 +32,7 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
-- name: setup-Debian |  Download check_mk_agent installer (deb)
+- name: setup-Debian | Download check_mk_agent installer (deb)
   delegate_to: localhost
   ansible.builtin.get_url:
     # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_deb }}"
@@ -35,7 +43,7 @@
   failed_when: false
   # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: setup-Debian |  Copy installer (deb)
+- name: setup-Debian | Copy installer (deb)
   ansible.builtin.copy:
     src: "/tmp/{{ checkmk_agent_deb }}"
     dest: "/tmp/{{ checkmk_agent_deb }}"
@@ -44,7 +52,7 @@
   changed_when: false
   failed_when: false
 
-- name: setup-Debian |  Install check_mk_agent (deb)
+- name: setup-Debian | Install check_mk_agent (deb)
   become: true
   ansible.builtin.apt:
     deb: "/tmp/{{ checkmk_agent_deb }}"
