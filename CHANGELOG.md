@@ -4,6 +4,12 @@
 
 [Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/0.1.0...HEAD)
 
+**Closed issues:**
+
+- Update buluma/todo-to-issue-action@v1.0.1 @buluma [\#10](https://github.com/buluma/ansible-role-checkmk_agent/issues/10)
+- Update action [\#9](https://github.com/buluma/ansible-role-checkmk_agent/issues/9)
+- rebuild action [\#8](https://github.com/buluma/ansible-role-checkmk_agent/issues/8)
+
 **Merged pull requests:**
 
 - Bump buluma/molecule-action from 6.0.0 to 6.0.1 [\#15](https://github.com/buluma/ansible-role-checkmk_agent/pull/15) ([dependabot[bot]](https://github.com/apps/dependabot))
