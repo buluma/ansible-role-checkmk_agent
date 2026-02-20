@@ -4,8 +4,15 @@
 
 [Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/0.1.0...HEAD)
 
+**Closed issues:**
+
+- Update buluma/todo-to-issue-action@v1.0.1 @buluma [\#10](https://github.com/buluma/ansible-role-checkmk_agent/issues/10)
+- Update action [\#9](https://github.com/buluma/ansible-role-checkmk_agent/issues/9)
+- rebuild action [\#8](https://github.com/buluma/ansible-role-checkmk_agent/issues/8)
+
 **Merged pull requests:**
 
+- Bump buluma/dependabot-auto-merge-action from 2.1.1 to 2.1.4 [\#22](https://github.com/buluma/ansible-role-checkmk_agent/pull/22) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/molecule-action from 6.0.0 to 6.0.1 [\#15](https://github.com/buluma/ansible-role-checkmk_agent/pull/15) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/dependabot-auto-merge-action from 2.0.2 to 2.1.1 [\#14](https://github.com/buluma/ansible-role-checkmk_agent/pull/14) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/gh-action-auto-merge-dependabot-updates from 1.0.5 to 1.0.8 [\#12](https://github.com/buluma/ansible-role-checkmk_agent/pull/12) ([dependabot[bot]](https://github.com/apps/dependabot))

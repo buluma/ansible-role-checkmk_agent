@@ -22,7 +22,7 @@
     state: directory
     owner: checkmk
     group: checkmk
-    mode: 0700
+    mode: "0700"
 
 - name: Copy authorised keys
   become: true
@@ -31,7 +31,7 @@
     dest: /home/checkmk/.ssh/authorized_keys
     owner: checkmk
     group: checkmk
-    mode: 0600
+    mode: "0600"
 
 - name: Cp -rfT /etc/skel /root
   ansible.builtin.raw: |
@@ -58,4 +58,4 @@
 
 # Setup/install.
 - name: Setup.
-  include_tasks: "setup-{{ ansible_os_family }}.yml"
+  ansible.builtin.include_tasks: "setup-{{ ansible_os_family }}.yml"
