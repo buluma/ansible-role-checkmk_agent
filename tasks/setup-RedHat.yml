@@ -60,6 +60,7 @@
     # url: "http://{{ checkmk_server }}/{{ checkmk_site_name }}/check_mk/agents/{{ checkmk_agent_rpm }}"
     url: "https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-el7-38.x86_64.rpm"
     dest: /tmp/
+    mode: "0644"
   run_once: true
 
 - name: setup-RedHat | Copy installer (rpm)
