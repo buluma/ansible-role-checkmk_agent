@@ -47,7 +47,7 @@
   failed_when: false
 
 - name: setup-RedHat | Install a list of packages dependencies (yum)
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
   vars:
     packages:
@@ -70,7 +70,7 @@
 
 - name: setup-RedHat | Install check_mk_agent (rpm)
   become: true
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "/tmp/{{ checkmk_agent_rpm }}"
     state: present
   environment:

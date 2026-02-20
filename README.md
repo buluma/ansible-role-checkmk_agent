@@ -58,7 +58,7 @@ The default values for the variables are set in [`defaults/main.yml`](https://gi
 checkmk_server: localhost
 checkmk_site_name: cmk
 checkmk_purge_xinetd: true
-checkmk_pub_key: ''
+checkmk_pub_key: ""
 ```
 
 ## [Requirements](#requirements)
