@@ -26,7 +26,7 @@
 - name: setup-Debian | Install dependencies (apt)
   become: true
   ansible.builtin.apt:
-    name: ['monitoring-plugins', 'python3-pip', 'xinetd']
+    name: ["monitoring-plugins", "python3-pip", "xinetd"]
     state: present
     update_cache: true
   environment:
