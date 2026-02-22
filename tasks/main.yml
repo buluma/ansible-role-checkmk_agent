@@ -1,61 +1,42 @@
 ---
-# tasks file for checkmk_agent
-
-# Prepare
 - name: Create checkmk group
-  become: true
   ansible.builtin.group:
     name: checkmk
     state: present
-
-- name: Create checkmk user
   become: true
+- name: Create checkmk user
   ansible.builtin.user:
-    name: checkmk
     comment: checkmk user
     group: checkmk
-
-- name: Create .ssh directory
+    name: checkmk
   become: true
+- name: Create .ssh directory
   ansible.builtin.file:
-    path: /home/checkmk/.ssh
-    state: directory
-    owner: checkmk
     group: checkmk
     mode: "0700"
-
-- name: Copy authorised keys
-  become: true
-  ansible.builtin.template:
-    src: authorized_keys.j2
-    dest: /home/checkmk/.ssh/authorized_keys
     owner: checkmk
+    path: /home/checkmk/.ssh
+    state: directory
+  become: true
+- name: Copy authorised keys
+  ansible.builtin.template:
+    dest: /home/checkmk/.ssh/authorized_keys
     group: checkmk
     mode: "0600"
-
+    owner: checkmk
+    src: authorized_keys.j2
+  become: true
 - name: Cp -rfT /etc/skel /root
-  ansible.builtin.raw: |
-    set -eu
-    cp -rfT /etc/skel /root
+  ansible.builtin.raw: "set -eu\ncp -rfT /etc/skel /root\n"
   changed_when: false
   failed_when: false
-
 - name: Setenforce 0
-  ansible.builtin.raw: |
-    set -eu
-    setenforce 0
-    sed -i 's/^SELINUX=.*$/SELINUX=permissive/g' /etc/selinux/config
+  ansible.builtin.raw: "set -eu\nsetenforce 0\nsed -i 's/^SELINUX=.*$/SELINUX=permissive/g' /etc/selinux/config\n"
   changed_when: false
   failed_when: false
-
 - name: Systemctl stop firewalld.service
-  ansible.builtin.raw: |
-    set -eu
-    systemctl stop firewalld.service
-    systemctl disable firewalld.service
+  ansible.builtin.raw: "set -eu\nsystemctl stop firewalld.service\nsystemctl disable firewalld.service\n"
   changed_when: false
   failed_when: false
-
-# Setup/install.
 - name: Setup.
-  ansible.builtin.include_tasks: "setup-{{ ansible_os_family }}.yml"
+  ansible.builtin.include_tasks: setup-{{ ansible_os_family }}.yml

@@ -1,7 +1,6 @@
----
-roles:
-  - name: buluma.bootstrap
-  - name: buluma.python_pip
-  - name: buluma.repo_epel
 collections:
-  - name: community.general
+- name: community.general
+roles:
+- name: buluma.bootstrap
+- name: buluma.python_pip
+- name: buluma.repo_epel

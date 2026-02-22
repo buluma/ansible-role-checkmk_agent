@@ -1,13 +1,15 @@
 ---
+dependencies: []
 galaxy_info:
-  role_name: checkmk_agent
-  namespace: buluma
   author: buluma
-  description: Install the checkmk agent and a selection of plugins
   company: ShadowNet
+  description: Install the checkmk agent and a selection of plugins
+  galaxy_tags:
+    - checkmk
   issue_tracker_url: https://gitlab.com/robconnolly/ansible_role_checkmk_agent/issues
   license: Apache-2.0
   min_ansible_version: "2.12"
+  namespace: buluma
   platforms:
     - name: Alpine
       versions:
@@ -30,6 +32,4 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - all
-  galaxy_tags:
-    - checkmk
-dependencies: []
+  role_name: checkmk_agent
