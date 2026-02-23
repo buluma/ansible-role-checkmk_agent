@@ -1,18 +1,18 @@
 ---
-  - become: true
-    gather_facts: true
-    hosts: all
-    name: Converge
-    pre_tasks:
-      - ansible.builtin.apt:
-          cache_valid_time: 600
-          update_cache: true
-        changed_when: false
-        name: Update apt cache.
-        when: ansible_os_family == 'Debian'
-    roles:
-      - checkmk_server: 127.0.0.1
-        checkmk_site_name: mysite
-        role: buluma.checkmk_agent
-    vars:
-      checkmk_purge_xinetd: true
+- become: true
+  gather_facts: true
+  hosts: all
+  name: Converge
+  pre_tasks:
+  - ansible.builtin.apt:
+      cache_valid_time: 600
+      update_cache: true
+    changed_when: false
+    name: Update apt cache.
+    when: ansible_os_family == 'Debian'
+  roles:
+  - checkmk_server: 127.0.0.1
+    checkmk_site_name: mysite
+    role: buluma.checkmk_agent
+  vars:
+    checkmk_purge_xinetd: true

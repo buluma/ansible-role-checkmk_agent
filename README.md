@@ -12,35 +12,35 @@ This example is taken from [`molecule/default/converge.yml`](https://github.com/
 
 ```yaml
 ---
-  - become: true
-    gather_facts: true
-    hosts: all
-    name: Converge
-    pre_tasks:
-      - ansible.builtin.apt:
-          cache_valid_time: 600
-          update_cache: true
-        changed_when: false
-        name: Update apt cache.
-        when: ansible_os_family == 'Debian'
-    roles:
-      - checkmk_server: 127.0.0.1
-        checkmk_site_name: mysite
-        role: buluma.checkmk_agent
-    vars:
-      checkmk_purge_xinetd: true
+- become: true
+  gather_facts: true
+  hosts: all
+  name: Converge
+  pre_tasks:
+  - ansible.builtin.apt:
+      cache_valid_time: 600
+      update_cache: true
+    changed_when: false
+    name: Update apt cache.
+    when: ansible_os_family == 'Debian'
+  roles:
+  - checkmk_server: 127.0.0.1
+    checkmk_site_name: mysite
+    role: buluma.checkmk_agent
+  vars:
+    checkmk_purge_xinetd: true
 ```
 
 The machine needs to be prepared. In CI this is done using [`molecule/default/prepare.yml`](https://github.com/buluma/ansible-role-checkmk_agent/blob/master/molecule/default/prepare.yml):
 
 ```yaml
 ---
-  - become: true
-    gather_facts: false
-    hosts: all
-    name: Prepare
-    roles:
-      - role: buluma.bootstrap
+- become: true
+  gather_facts: false
+  hosts: all
+  name: Prepare
+  roles:
+  - role: buluma.bootstrap
 ```
 
 Also see a [full explanation and example](https://buluma.github.io/how-to-use-these-roles.html) on how to use these roles.
