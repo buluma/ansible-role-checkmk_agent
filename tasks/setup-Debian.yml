@@ -8,7 +8,8 @@
     msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
   when: ansible_default_ipv4.gateway is defined
 - name: setup-Debian | Apt-get install *.deb
-  ansible.builtin.raw: "set -eu\nDEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3
+  ansible.builtin.raw:
+    "set -eu\nDEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3
     python3-apt python3-jmespath python3-lxml python3-pip python3-setuptools python3-venv python3-virtualenv python3-wheel rsync sudo tar unzip util-linux zip libperl5.32
     libevent-2.1-7\n"
   changed_when: false
