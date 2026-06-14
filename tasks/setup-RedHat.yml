@@ -9,7 +9,7 @@
     python3-libselinux python3-lxml python3-pip python3-setuptools python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip\n"
   changed_when: false
   failed_when: false
-  when: ansible_facts.distribution | lower == "fedora"
+  when: ansible_distribution | lower == "fedora"
 - name: setup-RedHat | Redhat-9 | yum install *.rpm
   ansible.builtin.raw:
     "set -eu\nyum-config-manager --enable crb || echo $?\nyum-config-manager --enable codeready-builder-beta-for-rhel-9-x86_64-rpms || echo $?\n\
@@ -18,7 +18,7 @@
     rsync shadow-utils sudo tar unzip util-linux xz yum-utils zip\n"
   changed_when: false
   failed_when: false
-  when: ansible_facts.os_family | lower == "redhat" and ansible_facts.distribution_major_version | lower == "9"
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "9"
 - name: setup-RedHat | Redhat-8 | yum install *.rpm
   ansible.builtin.raw: 'set -eu
 
@@ -32,7 +32,7 @@
     '
   changed_when: false
   failed_when: false
-  when: ansible_facts.os_family | lower == "redhat" and ansible_facts.distribution_major_version | lower == "8"
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "8"
 - name: setup-RedHat | Redhat-7 | yum install *.rpm
   ansible.builtin.raw:
     "set -eu\nyum-config-manager --enable rhel-7-server-optional-rpms\nyum-config-manager --enable rhel-7-server-extras-rpms\nsubscription-manager
@@ -41,7 +41,7 @@
     python3-virtualenv python3-wheel rsync shadow-utils sudo tar unzip util-linux xz yum-plugin-versionlock yum-utils zip\n"
   changed_when: false
   failed_when: false
-  when: ansible_facts.os_family | lower == "redhat" and ansible_facts.distribution_major_version | lower == "7"
+  when: ansible_os_family | lower == "redhat" and ansible_distribution_major_version | lower == "7"
 - name: setup-RedHat | Install a list of packages dependencies (yum)
   ansible.builtin.dnf:
     name: "{{ packages }}"

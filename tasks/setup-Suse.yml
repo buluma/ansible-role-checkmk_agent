@@ -9,15 +9,15 @@
     python3-setuptools python3-virtualenv python3-wheel rsync shadow sudo tar unzip util-linux xz zip\n"
   changed_when: false
   failed_when: false
-  when: ansible_facts.os_family | lower == "suse"
-- name: setup-Suse |  "Download check_mk_agent installer (rpm) - {{ ansible_facts.os_family }}"
+  when: ansible_os_family | lower == "suse"
+- name: setup-Suse |  "Download check_mk_agent installer (rpm) - {{ ansible_os_family }}"
   ansible.builtin.get_url:
     dest: /tmp/
     mode: "0644"
     url: https://download.checkmk.com/checkmk/2.0.0p23/check-mk-free-2.0.0p23-sles15sp3-38.x86_64.rpm
   delegate_to: localhost
   run_once: true
-- name: setup-Suse |  "Copy installer (rpm) - {{ ansible_facts.os_family }}"
+- name: setup-Suse |  "Copy installer (rpm) - {{ ansible_os_family }}"
   ansible.builtin.copy:
     dest: /tmp/{{ checkmk_agent_suse }}
     mode: preserve
@@ -26,7 +26,7 @@
   ansible.builtin.rpm_key:
     key: https://download.checkmk.com/checkmk/Check_MK-pubkey.gpg
     state: present
-- name: setup-Suse |  "Install check_mk_agent (rpm) - {{ ansible_facts.os_family }}"
+- name: setup-Suse |  "Install check_mk_agent (rpm) - {{ ansible_os_family }}"
   ansible.builtin.dnf:
     name: /tmp/{{ checkmk_agent_suse }}
     state: present
