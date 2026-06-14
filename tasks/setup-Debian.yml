@@ -5,8 +5,8 @@
     update_cache: "yes"
 - name: setup-Debian | Print the gateway for each debian host when defined
   ansible.builtin.debug:
-    msg: System {{ inventory_hostname }} has gateway {{ ansible_facts.default_ipv4.gateway }}
-  when: ansible_facts.default_ipv4.gateway is defined
+    msg: System {{ inventory_hostname }} has gateway {{ ansible_facts['default_ipv4'].gateway }}
+  when: ansible_facts['default_ipv4'].gateway is defined
 - name: setup-Debian | Apt-get install *.deb
   ansible.builtin.raw:
     "set -eu\nDEBIAN_FRONTEND=noninteractive apt-get install -y bzip2 ca-certificates curl gcc gnupg gzip hostname iproute2 passwd procps python3
@@ -30,7 +30,7 @@
     update_cache: true
   become: true
   environment:
-    PATH: "{{ ansible_facts.env.PATH }}:/sbin:/usr/sbin"
+    PATH: "{{ ansible_facts['env'].PATH }}:/sbin:/usr/sbin"
 - name: setup-Debian | Download check_mk_agent installer (deb)
   ansible.builtin.get_url:
     dest: /tmp/
@@ -54,5 +54,5 @@
   become: true
   changed_when: false
   environment:
-    PATH: "{{ ansible_facts.env.PATH }}:/sbin:/usr/sbin"
+    PATH: "{{ ansible_facts['env'].PATH }}:/sbin:/usr/sbin"
   failed_when: false
