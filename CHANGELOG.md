@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/buluma/ansible-role-checkmk_agent/tree/HEAD)
+
+[Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/26.6.0...HEAD)
+
+**Closed issues:**
+
+- Pinning due to CVE-2024-3094 [\#20](https://github.com/buluma/ansible-role-checkmk_agent/issues/20)
+
 ## [26.6.0](https://github.com/buluma/ansible-role-checkmk_agent/tree/26.6.0) (2026-06-14)
 
 [Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/0.1.0...26.6.0)
