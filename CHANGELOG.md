@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/buluma/ansible-role-checkmk_agent/tree/HEAD)
+## [26.6.0](https://github.com/buluma/ansible-role-checkmk_agent/tree/26.6.0) (2026-06-14)
 
-[Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/0.1.0...HEAD)
+[Full Changelog](https://github.com/buluma/ansible-role-checkmk_agent/compare/0.1.0...26.6.0)
 
 **Closed issues:**
 
@@ -12,7 +12,11 @@
 
 **Merged pull requests:**
 
+- Bump docker/setup-buildx-action from 3 to 4 [\#25](https://github.com/buluma/ansible-role-checkmk_agent/pull/25) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/dependabot-auto-merge-action from 2.1.1 to 2.1.4 [\#22](https://github.com/buluma/ansible-role-checkmk_agent/pull/22) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump actions/checkout from 4 to 6 [\#21](https://github.com/buluma/ansible-role-checkmk_agent/pull/21) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump dependabot/fetch-metadata from 1 to 2 [\#19](https://github.com/buluma/ansible-role-checkmk_agent/pull/19) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump release-drafter/release-drafter from 5 to 6 [\#17](https://github.com/buluma/ansible-role-checkmk_agent/pull/17) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/molecule-action from 6.0.0 to 6.0.1 [\#15](https://github.com/buluma/ansible-role-checkmk_agent/pull/15) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/dependabot-auto-merge-action from 2.0.2 to 2.1.1 [\#14](https://github.com/buluma/ansible-role-checkmk_agent/pull/14) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump buluma/gh-action-auto-merge-dependabot-updates from 1.0.5 to 1.0.8 [\#12](https://github.com/buluma/ansible-role-checkmk_agent/pull/12) ([dependabot[bot]](https://github.com/apps/dependabot))
