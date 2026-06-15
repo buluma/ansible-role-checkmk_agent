@@ -1,13 +1,11 @@
 ---
-- become: false
-  gather_facts: false
 - name: Verify
   hosts: all
-  name: Verify
+  become: false
+  gather_facts: false
   tasks:
-    - ansible.builtin.shell:
-    changed_when: false
+    - name: Run checkmk
+      ansible.builtin.shell:
         cmd: omd version > omd.version
-      args:
         creates: omd.version
-      name: Run checkmk
+      changed_when: false
